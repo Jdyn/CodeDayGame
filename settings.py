@@ -1,0 +1,37 @@
+# define some colors (R, G, B)
+WHITE = (242, 242, 242)
+BLACK = (33, 33, 33)
+DARK_GREY = (66, 66, 66)
+LIGHT_GREY = (100, 100, 100)
+GREEN = (165, 214, 167)
+RED = (244, 67, 54)
+YELLOW = (255, 255, 0)
+BLUE = (33, 150, 243)
+WALL = (158, 158, 158)
+TEAL = (0, 188, 212)
+PURPLE = (103, 58, 183)
+LIGHT_BLUE = (144, 202, 249)
+# game settings
+WIDTH = 512   # 16 * 64 or 32 * 32 or 64 * 16
+HEIGHT = 512  # 16 * 48 or 32 * 24 or 64 * 12
+FPS = 60
+TITLE = "BomberMan"
+BG_COLOR = DARK_GREY
+
+TILESIZE = 32
+GRIDWIDTH = WIDTH / TILESIZE
+GRIDHEIGHT = HEIGHT / TILESIZE
+
+# Player settings
+PLAYER_SPEED = 200
+
+# Bomb Settings
+BOMB_LIFETIME = 2000
+BOMB_RATE = 750
+
+FIRE_LIFETIME = 1000
+FIRE_RATE = 750
+
+FIRE_IMG = 'Fire.png'
+HFIRE_IMG = 'HFire.png'
+VFIRE_IMG = "VFire.png"
