@@ -8,66 +8,72 @@ class Player1(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE * 1.3, TILESIZE * 1.3))
+        self.image = pg.Surface((TILESIZE * 1.5, TILESIZE * 1.5))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
-        self.vx, self.vy = 0, 0
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
+        self.vel = vec(0, 0)
+        self.pos = vec(x, y) * TILESIZE
+        self.rect.center = self.pos
         self.last_bomb = 0
+        self.time = pg.time.get_ticks()
 
     def get_keys(self):
-        self.vx, self.vy = 0, 0
+        self.vel = vec(0, 0)
         keys = pg.key.get_pressed()
         if keys[pg.K_a]:
-            self.vx = -PLAYER_SPEED
+            self.vel.x = -PLAYER_SPEED
         if keys[pg.K_d]:
-            self.vx = PLAYER_SPEED
+            self.vel.x = PLAYER_SPEED
         if keys[pg.K_w]:
-            self.vy = -PLAYER_SPEED
+            self.vel.y = -PLAYER_SPEED
         if keys[pg.K_s]:
-            self.vy = PLAYER_SPEED
+            self.vel.y = PLAYER_SPEED
+
         if keys[pg.K_SPACE]:
             now = pg.time.get_ticks()
             if now - self.last_bomb > BOMB_RATE:
-                self.last_bomb = now
-                Bomb(self.game, self.x, self.y)
-
+                    self.last_bomb = now
+                    Bomb(self.game, self.pos.x, self.pos.y, self.pos)
 
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
-                if self.vx > 0:
-                    self.x = hits[0].rect.left - self.rect.width
-                if self.vx < 0:
-                    self.x = hits[0].rect.right
-                self.vx = 0
-                self.rect.x = self.x
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.rect.width
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right
+                self.vel.x = 0
+                self.rect.x = self.pos.x
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
-                if self.vy > 0:
-                    self.y = hits[0].rect.top - self.rect.height
-                if self.vy < 0:
-                    self.y = hits[0].rect.bottom
-                self.vy = 0
-                self.rect.y = self.y
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.rect.height
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom
+                self.vel.y = 0
+                self.rect.y = self.pos.y
 
     def collide_with_fire(self):
         hits = pg.sprite.spritecollide(self, self.game.fire, False)
         if hits:
-            self.kill()
+            self.game.redScore += 1
+            pg.time.wait(2000)
+            pg.event.clear()
+            self.time = pg.time.get_ticks()
+            self.game.new()
 
     def update(self):
-        self.collide_with_fire()
         self.get_keys()
-        self.x += self.vx * self.game.dt
-        self.y += self.vy * self.game.dt
-        self.rect.x = self.x
+        # self.collide_with_fire()
+        self.pos += self.vel * self.game.dt
+        self.rect.x = self.pos.x
         self.collide_with_walls('x')
-        self.rect.y = self.y
+        self.rect.y = self.pos.y
         self.collide_with_walls('y')
+        if pg.time.get_ticks() - self.time > INVULNERABILITY:
+            self.collide_with_fire()
 
 
 class Player2(pg.sprite.Sprite):
@@ -75,69 +81,72 @@ class Player2(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE * 1.3, TILESIZE * 1.3))
-        self.image.fill(PURPLE)
+        self.image = pg.Surface((TILESIZE * 1.1, TILESIZE * 1.1))
+        self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.vx, self.vy = 0, 0
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
+        self.vel = vec(0, 0)
+        self.pos = vec(x, y) * TILESIZE
+        self.rect.center = self.pos
         self.last_bomb = 0
+        self.time = pg.time.get_ticks()
 
     def get_keys(self):
-        self.vx, self.vy = 0, 0
+        self.vel = vec(0, 0)
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT]:
-            self.vx = -PLAYER_SPEED
+            self.vel.x = -PLAYER_SPEED
         if keys[pg.K_RIGHT]:
-            self.vx = PLAYER_SPEED
+            self.vel.x = PLAYER_SPEED
         if keys[pg.K_UP]:
-            self.vy = -PLAYER_SPEED
+            self.vel.y = -PLAYER_SPEED
         if keys[pg.K_DOWN]:
-            self.vy = PLAYER_SPEED
+            self.vel.y = PLAYER_SPEED
+
         if keys[pg.K_SLASH]:
             now = pg.time.get_ticks()
             if now - self.last_bomb > BOMB_RATE:
-                self.last_bomb = now
-                Bomb(self.game, self.x, self.y)
-
-        if self.vx != 0 and self.vy != 0:
-            self.vx *= 0.7071
-            self.vy *= 0.7071
+                    self.last_bomb = now
+                    Bomb(self.game, self.pos.x, self.pos.y, self.pos)
 
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
-                if self.vx > 0:
-                    self.x = hits[0].rect.left - self.rect.width
-                if self.vx < 0:
-                    self.x = hits[0].rect.right
-                self.vx = 0
-                self.rect.x = self.x
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.rect.width
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right
+                self.vel.x = 0
+                self.rect.x = self.pos.x
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
-                if self.vy > 0:
-                    self.y = hits[0].rect.top - self.rect.height
-                if self.vy < 0:
-                    self.y = hits[0].rect.bottom
-                self.vy = 0
-                self.rect.y = self.y
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.rect.height
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom
+                self.vel.y = 0
+                self.rect.y = self.pos.y
 
     def collide_with_fire(self):
         hits = pg.sprite.spritecollide(self, self.game.fire, False)
         if hits:
-            self.kill()
+            self.game.blueScore += 1
+            pg.time.wait(2000)
+            pg.event.clear()
+            self.time = pg.time.get_ticks()
+            self.game.new()
 
     def update(self):
-        self.collide_with_fire()
         self.get_keys()
-        self.x += self.vx * self.game.dt
-        self.y += self.vy * self.game.dt
-        self.rect.x = self.x
+        # self.collide_with_fire()
+        self.pos += self.vel * self.game.dt
+        self.rect.x = self.pos.x
         self.collide_with_walls('x')
-        self.rect.y = self.y
+        self.rect.y = self.pos.y
         self.collide_with_walls('y')
+        if pg.time.get_ticks() - self.time > INVULNERABILITY:
+            self.collide_with_fire()
 
 
 class Wall(pg.sprite.Sprite):
@@ -155,39 +164,57 @@ class Wall(pg.sprite.Sprite):
 
 
 class Bomb(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, pos):
         self.groups = game.all_sprites, game.bombs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(BLACK)
+        self.image = pg.Surface((TILESIZE * 1.5, TILESIZE * 1.5))
+        self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.x = self.rect.x
-        self.y = self.rect.y
+        self.pos = vec(x, y)
+        self.bombPos = pos
+        self.rect.x = self.bombPos.x
+        self.rect.y = self.bombPos.y
+        self.pos.x = self.rect.centerx
+        self.pos.y = self.rect.centery
+
         self.spawn_time = pg.time.get_ticks()
 
     def update(self):
         if pg.time.get_ticks() - self.spawn_time > BOMB_LIFETIME:
             self.kill()
-            Fire(self.game, self.x -90, self.y - 90)
+            VFire(self.game, self.pos.x, self.pos.y)
+            HFire(self.game, self.pos.x, self.pos.y)
 
     def explode(self):
         pass
 
 
-class Fire(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+class VFire(pg.sprite.Sprite):
+    def __init__(self, game, posx, posy):
         self.groups = game.all_sprites, game.fire
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.image = game.Fire_img
+        self.game = game
+        self.image = game.HFire_img
         self.rect = self.image.get_rect()
-        self.rect.move(-224, -224)
-        self.rect.x = x
-        self.rect.y = y
-        self.despawn_time =pg.time.get_ticks()
+        self.rect.center = (posx, posy)
+        self.spawn_time = pg.time.get_ticks()
 
     def update(self):
-        if pg.time.get_ticks() - self.despawn_time > FIRE_LIFETIME:
+        if pg.time.get_ticks() - self.spawn_time > FIRE_LIFETIME:
+            self.kill()
+
+
+class HFire(pg.sprite.Sprite):
+    def __init__(self, game, posx, posy):
+        self.groups = game.all_sprites, game.fire
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = game.VFire_img
+        self.rect = self.image.get_rect()
+        self.rect.center = (posx, posy)
+        self.spawn_time = pg.time.get_ticks()
+
+    def update(self):
+        if pg.time.get_ticks() - self.spawn_time > FIRE_LIFETIME:
             self.kill()
