@@ -1,8 +1,6 @@
 
-import pygame as pg
 import sys
 from os import path
-from settings import *
 from sprites import *
 
 
@@ -23,8 +21,8 @@ class Game:
     def load_data(self):
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'img')
-        self.score_font = path.join(img_folder, 'Impacted2.0.ttf')
-        self.my_font = pg.font.SysFont("monospace", 22, True)
+        self.score_font = path.join(img_folder, 'Basic-Regular.ttf')
+        self.my_font = pg.font.SysFont("monospace", 10, True)
         self.HFire_img = pg.image.load(path.join(img_folder, HFIRE_IMG)).convert()
         self.VFire_img = pg.image.load(path.join(img_folder, VFIRE_IMG)).convert()
         self.map_data = []
@@ -114,7 +112,6 @@ class Game:
         pg.display.flip()
 
     def events(self):
-        # catch all events here
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.quit()
@@ -123,15 +120,27 @@ class Game:
                     self.quit()
 
     def show_start_screen(self):
-        self.screen.fill(BLACK)
-        self.draw_text("BOMBER MAN", self.score_font, 85, WHITE, WIDTH / 2, HEIGHT / 2, align="center")
-        self.draw_text("press any key to start", self.score_font, 30, WHITE, WIDTH / 2, HEIGHT * 3 / 4, align="center")
+        self.screen.fill(BG_COLOR)
+
+        for x in range(0, WIDTH, TILESIZE):
+            pg.draw.line(self.screen, LIGHT_GREY, (x, 0), (x, HEIGHT))
+        for y in range(0, HEIGHT, TILESIZE):
+            pg.draw.line(self.screen, LIGHT_GREY, (0, y), (WIDTH, y))
+
+        self.draw_text("BOMBER MAN", self.score_font, 75, WHITE, WIDTH / 2, HEIGHT * 1/4, align="center")
+        self.draw_text("PRESS ANY KEY", self.score_font, 30, WHITE, WIDTH / 2, HEIGHT * 3 / 4, align="center")
 
         pg.display.flip()
         self.wait_for_key()
 
     def show_go_screen(self):
-        self.screen.fill(BLACK)
+        self.screen.fill(BG_COLOR)
+
+        for x in range(0, WIDTH, TILESIZE):
+            pg.draw.line(self.screen, LIGHT_GREY, (x, 0), (x, HEIGHT))
+        for y in range(0, HEIGHT, TILESIZE):
+            pg.draw.line(self.screen, LIGHT_GREY, (0, y), (WIDTH, y))
+
         self.draw_text(str(self.blueScore), self.score_font, 22, BLUE, (WIDTH / 2) - 16, 0, align="n")
         self.draw_text(str(self.redScore), self.score_font, 22, RED, (WIDTH / 2) + 16, 0, align="n")
         if self.blueWin:

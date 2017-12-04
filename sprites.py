@@ -8,7 +8,7 @@ class Player1(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE * 1.5, TILESIZE * 1.5))
+        self.image = pg.Surface((TILESIZE * 1.1, TILESIZE * 1.1))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
         self.vel = vec(0, 0)
@@ -168,7 +168,7 @@ class Bomb(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.bombs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE * 1.5, TILESIZE * 1.5))
+        self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         self.pos = vec(x, y)
